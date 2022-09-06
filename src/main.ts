@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'dotenv';
+import 'reflect-metadata';
 
 async function bootstrap() {
   const port = process.env.PORT || 4000;
