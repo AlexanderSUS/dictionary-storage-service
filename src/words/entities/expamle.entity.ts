@@ -10,7 +10,7 @@ export class ExampleEntity {
   sentence: string;
 
   @OneToMany(() => WordEntity, (word) => word.example, {
-    nullable: true,
+    nullable: false,
   })
   words: WordEntity[];
 }

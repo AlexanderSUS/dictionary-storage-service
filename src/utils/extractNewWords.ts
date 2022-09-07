@@ -1,7 +1,7 @@
 import { RawDataSet } from 'src/types/textProcessing';
 
 function extractNewWords(dataSet: RawDataSet[], dbWords: string[]) {
-  const dbWordsSet = new Set(dbWords);
+  const dbWordsSet = new Set<string>(dbWords);
 
   return dataSet.reduce((accumulator, set) => {
     const { sentence, words } = set;
@@ -23,7 +23,7 @@ function extractNewWords(dataSet: RawDataSet[], dbWords: string[]) {
     }
 
     return accumulator;
-  }, []);
+  }, [] as RawDataSet[]);
 }
 
 export default extractNewWords;

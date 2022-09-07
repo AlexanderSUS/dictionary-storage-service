@@ -18,32 +18,33 @@ export class WordsService {
   ) {}
 
   async create({ text }: CreateWordDto) {
-    const dataSet = handleText(text);
+    const newWordsAndExamples = handleText(text);
 
     const dbRawWords = await this.wordsRepository.find({
-      select: { word: true },
+      select: {
+        word: true,
+      },
     });
 
-    const newWordsData = extractNewWords(
-      dataSet,
-      dbRawWords.map(({ word }) => word),
-    );
+    const wordsFromDb = dbRawWords.map(({ word }) => word);
 
-    const promisesArray = newWordsData.map((set) =>
+    const newWordsData = extractNewWords(newWordsAndExamples, wordsFromDb);
+
+    const promisesOfSavedExamples = newWordsData.map((set) =>
       this.exampleRepository.save({ sentence: set.sentence }),
     );
 
-    const examples = await Promise.all(promisesArray);
+    const savedExamples = await Promise.all(promisesOfSavedExamples);
 
-    const dataArray = examples.map((example, index) =>
+    const newSavedWords = savedExamples.map((example, index) =>
       newWordsData[index].words.map((word) =>
         this.wordsRepository.save({ word, exampleId: example.id }),
       ),
     );
 
-    const words = await Promise.all(dataArray.flat());
+    const words = await Promise.all(newSavedWords.flat());
 
-    return { examples, words };
+    return { savedExamples, words };
   }
 
   findAll() {
