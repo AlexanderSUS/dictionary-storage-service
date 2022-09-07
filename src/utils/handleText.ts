@@ -3,43 +3,83 @@ import { LINE_BRAKE } from 'src/const/const';
 function markTerminator(text: string) {
   const processedText: string[] = [];
 
+  let terminatorFlag = false;
+
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
+
+    if (terminatorFlag && char === ' ') {
+      processedText.push(LINE_BRAKE);
+
+      terminatorFlag = false;
+
+      continue;
+    }
+
+    if (terminatorFlag) {
+      terminatorFlag = false;
+    }
 
     processedText.push(char);
 
     if ((char === '!' || char === '?' || char === '.') && i < text.length - 1) {
-      processedText.push(LINE_BRAKE);
+      terminatorFlag = true;
     }
   }
 
   return processedText.join('');
 }
 
-function removeLastChar(sentece: string) {
-  const lastChar = sentece[sentece.length - 1];
-
-  if (lastChar === '.' || lastChar === '!' || lastChar === '?') {
-    return sentece.slice(0, -1);
-  }
-
-  return sentece;
+function removeEmptyValues(words: string[]) {
+  return words.filter((word) => word !== '');
 }
 
-function breakSenteceToWords(sentence: string) {
-  return sentence
-    .replace(/[!-@{-~]/, ' ')
-    .split(' ')
-    .filter((word) => word !== ' ' && word !== '');
+function removeDigits(words: string[]) {
+  return words.reduce((acc, word) => {
+    if (!word[0].match(/\d/)) {
+      acc.push(word);
+    }
+
+    return acc;
+  }, [] as string[]);
+}
+
+function removeAnyNonAlphabeticalChar(word: string) {
+  let handledWord = word;
+
+  while (handledWord.length && !handledWord[0].match(/[A-Za-z]/)) {
+    handledWord = removeCharFromStart(handledWord);
+  }
+
+  while (
+    handledWord.length &&
+    !handledWord[handledWord.length - 1].match(/[A-Za-z]/)
+  ) {
+    handledWord = removeChareFromEnd(handledWord);
+  }
+
+  return handledWord;
+}
+
+function removeCharFromStart(word: string) {
+  return word.slice(1, word.length - 1);
+}
+
+function removeChareFromEnd(word: string) {
+  return word.slice(0, -1);
 }
 
 function extractWords(sentence: string) {
-  const sentenceWithouTerminator = removeLastChar(sentence);
   const uniqWords = new Set();
 
-  const words = breakSenteceToWords(sentenceWithouTerminator);
+  let rawWords = sentence.split(' ');
 
-  words.forEach((word) => {
+  rawWords = removeEmptyValues(rawWords);
+  rawWords = removeDigits(rawWords);
+  rawWords = rawWords.map((word) => removeAnyNonAlphabeticalChar(word));
+  rawWords = removeEmptyValues(rawWords);
+
+  rawWords.forEach((word) => {
     uniqWords.add(word.toLowerCase());
   });
 
@@ -47,7 +87,7 @@ function extractWords(sentence: string) {
 }
 
 function removeNonUniqWords() {
-  const uniqWords = new Set();
+  const uniqWords = new Set<string>();
 
   return (words: string[]) =>
     words.reduce((acc, nextWord) => {
@@ -57,17 +97,11 @@ function removeNonUniqWords() {
         acc.push(nextWord);
       }
       return acc;
-    }, []);
-}
-
-function getPureSentences(text: string) {
-  const markedText = markTerminator(text);
-
-  return markedText.split(LINE_BRAKE).map((string) => string.trim());
+    }, [] as string[]);
 }
 
 const handleText = (text: string) => {
-  const sentences = getPureSentences(text);
+  const sentences = markTerminator(text).split(LINE_BRAKE);
 
   const words = sentences.map((sentece) => {
     return extractWords(sentece);
