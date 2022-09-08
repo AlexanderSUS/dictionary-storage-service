@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WordsModule } from './words/words.module';
 import { DataSource } from 'typeorm';
+import { DictionaryApiModule } from './dictionary-api/dictionary-api.module';
 import 'dotenv';
 
 @Module({
@@ -19,6 +20,7 @@ import 'dotenv';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    DictionaryApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
