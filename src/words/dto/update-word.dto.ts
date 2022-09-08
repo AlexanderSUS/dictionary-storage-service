@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateWordDto } from './create-word.dto';
+import { IsEnum } from 'class-validator';
+import { WordStatus } from 'src/const/enum';
 
-export class UpdateWordDto extends PartialType(CreateWordDto) {}
+export class UpdateWordDto {
+  @IsEnum(WordStatus)
+  status: WordStatus;
+}

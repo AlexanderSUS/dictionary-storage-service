@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ExampleEntity } from './expamle.entity';
+import { WordStatus } from 'src/const/enum';
 
 @Entity()
 export class WordEntity {
@@ -14,6 +15,13 @@ export class WordEntity {
 
   @Column()
   word: string;
+
+  @Column({
+    type: 'enum',
+    enum: WordStatus,
+    default: WordStatus.NEW,
+  })
+  status: WordStatus;
 
   @ManyToOne(() => ExampleEntity, (expamle) => expamle.words, {
     nullable: true,

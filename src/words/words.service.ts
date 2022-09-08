@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { WordStatus } from 'src/const/enum';
 import extractNewWords from 'src/utils/extractNewWords';
 import handleText from 'src/utils/handleText';
 import { Repository } from 'typeorm';
@@ -48,18 +49,55 @@ export class WordsService {
   }
 
   findAll() {
-    return `This action returns all words`;
+    return this.wordsRepository.find({
+      relations: {
+        example: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} word`;
+  findAllByStatus(status: string) {
+    if (status === WordStatus.LEARNED || status === WordStatus.NEW) {
+      return this.wordsRepository.find({
+        where: {
+          status: status,
+        },
+        relations: {
+          example: true,
+        },
+      });
+    }
+
+    throw new HttpException('Word status not valid', HttpStatus.BAD_REQUEST);
   }
 
-  update(id: number, updateWordDto: UpdateWordDto) {
-    return `This action updates a #${id} word`;
+  async findOne(id: string) {
+    const word = this.wordsRepository.findOneBy({ id });
+
+    if (!word) {
+      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+    }
+
+    return word;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} word`;
+  async update(id: string, updateWordDto: UpdateWordDto) {
+    const word = await this.wordsRepository.findOneBy({ id });
+
+    if (!word) {
+      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.wordsRepository.save({ ...word, ...updateWordDto });
+  }
+
+  async remove(id: string) {
+    const word = await this.wordsRepository.findOneBy({ id });
+
+    if (!word) {
+      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.wordsRepository.remove(word);
   }
 }
