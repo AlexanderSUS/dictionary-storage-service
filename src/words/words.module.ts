@@ -3,10 +3,9 @@ import { WordsService } from './words.service';
 import { WordsController } from './words.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WordEntity } from './entities/word.entity';
-import { ExampleEntity } from './entities/expamle.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([WordEntity, ExampleEntity])],
+  imports: [TypeOrmModule.forFeature([WordEntity])],
   controllers: [WordsController],
   providers: [WordsService],
 })

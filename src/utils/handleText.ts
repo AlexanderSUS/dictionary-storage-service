@@ -1,5 +1,6 @@
 import { LINE_BRAKE } from 'src/const/const';
 
+// TODO REMOVE IF NO NEEDED
 function markTerminator(text: string) {
   const processedText: string[] = [];
 
@@ -69,50 +70,15 @@ function removeChareFromEnd(word: string) {
   return word.slice(0, -1);
 }
 
-function extractWords(sentence: string) {
-  const uniqWords = new Set();
-
-  let rawWords = sentence.split(' ');
+export default function extractWordsFromText(text: string) {
+  let rawWords = text.split(' ');
 
   rawWords = removeEmptyValues(rawWords);
   rawWords = removeDigits(rawWords);
   rawWords = rawWords.map((word) => removeAnyNonAlphabeticalChar(word));
   rawWords = removeEmptyValues(rawWords);
 
-  rawWords.forEach((word) => {
-    uniqWords.add(word.toLowerCase());
-  });
+  const uniqWords = new Set(rawWords.map((word) => word.toLowerCase()));
 
   return Array.from(uniqWords) as string[];
 }
-
-function removeNonUniqWords() {
-  const uniqWords = new Set<string>();
-
-  return (words: string[]) =>
-    words.reduce((acc, nextWord) => {
-      if (!uniqWords.has(nextWord)) {
-        uniqWords.add(nextWord);
-
-        acc.push(nextWord);
-      }
-      return acc;
-    }, [] as string[]);
-}
-
-const handleText = (text: string) => {
-  const sentences = markTerminator(text).split(LINE_BRAKE);
-
-  const words = sentences.map((sentece) => {
-    return extractWords(sentece);
-  });
-
-  const filterUniq = removeNonUniqWords();
-
-  return sentences.map((sentence, index) => ({
-    sentence,
-    words: filterUniq(words[index]),
-  }));
-};
-
-export default handleText;
