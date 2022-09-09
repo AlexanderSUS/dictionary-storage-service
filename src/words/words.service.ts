@@ -15,7 +15,7 @@ export class WordsService {
     private wordsRepository: Repository<WordEntity>,
   ) {}
 
-  async create({ text }: CreateWordDto) {
+  async createFromText({ text }: CreateWordDto) {
     const wordsFromText = extractWordsFromText(text);
 
     const dbRawWords = await this.wordsRepository.find({
@@ -34,20 +34,30 @@ export class WordsService {
     );
   }
 
+  async create(createWordDto: CreateWordDto) {
+    const word = createWordDto.text;
+
+    const wordFromDb = await this.wordsRepository.findOneBy({
+      word,
+    });
+
+    if (wordFromDb) {
+      return 'This word allready in your database';
+    }
+
+    return this.wordsRepository.save({ word });
+  }
+
   findAll() {
     return this.wordsRepository.find();
   }
 
-  findAllByStatus(status: string) {
-    if (status === WordStatus.LEARNED || status === WordStatus.NEW) {
-      return this.wordsRepository.find({
-        where: {
-          status: status,
-        },
-      });
-    }
-
-    throw new HttpException('Word status not valid', HttpStatus.BAD_REQUEST);
+  findAllByStatus(status: WordStatus) {
+    return this.wordsRepository.find({
+      where: {
+        status: status,
+      },
+    });
   }
 
   async findOne(id: string) {
