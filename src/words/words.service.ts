@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WordStatus } from 'src/const/enum';
 import { DictionaryApiService } from 'src/dictionary-api/dictionary-api.service';
-import extractNewWords from 'src/utils/extractNewWords';
 import extractWordsFromText from 'src/utils/handleText';
 import { Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
@@ -34,7 +33,9 @@ export class WordsService {
       return 'This word allready in your database';
     }
 
-    return this.wordsRepository.save({ word });
+    const wordsFromText = extractWordsFromText(word);
+
+    return this.dictionaryApiModule.getWordsFromDb(wordsFromText);
   }
 
   findAll() {
