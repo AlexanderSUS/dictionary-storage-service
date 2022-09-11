@@ -1,7 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WordStatus } from 'src/const/enum';
-import extractWordsFromText from 'src/utils/handleText';
 import { WordsStorageService } from 'src/words-storage/words-storage.service';
 import { Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
@@ -16,15 +14,7 @@ export class WordsService {
     private wordsRepository: Repository<Word>,
   ) {}
 
-  async createFromText({ text }: CreateWordDto) {
-    const wordsFromText = extractWordsFromText(text);
-
-    return this.wordsStorage.getWordsFromDb(wordsFromText);
-  }
-
-  async create(createWordDto: CreateWordDto) {
-    const word = createWordDto.text;
-
+  async create({ word }: CreateWordDto) {
     const wordFromDb = await this.wordsRepository.findOneBy({
       word,
     });
@@ -33,19 +23,11 @@ export class WordsService {
       return 'This word allready in your database';
     }
 
-    return this.wordsStorage.getWordsFromDb([createWordDto.text]);
+    return this.wordsStorage.getWordsFromDb([word]);
   }
 
   findAll() {
     return this.wordsRepository.find();
-  }
-
-  findAllByStatus(status: WordStatus) {
-    return this.wordsRepository.find({
-      where: {
-        status: status,
-      },
-    });
   }
 
   async findOne(id: string) {
