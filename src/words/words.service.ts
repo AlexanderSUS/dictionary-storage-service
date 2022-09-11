@@ -1,37 +1,26 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WordStatus } from 'src/const/enum';
+import { DictionaryApiService } from 'src/dictionary-api/dictionary-api.service';
 import extractNewWords from 'src/utils/extractNewWords';
 import extractWordsFromText from 'src/utils/handleText';
 import { Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
-import { WordEntity } from './entities/word.entity';
+import { Word } from './entities/word.entity';
 
 @Injectable()
 export class WordsService {
   constructor(
-    @InjectRepository(WordEntity)
-    private wordsRepository: Repository<WordEntity>,
+    @InjectRepository(Word)
+    private wordsRepository: Repository<Word>,
+    private dictionaryApiModule: DictionaryApiService,
   ) {}
 
   async createFromText({ text }: CreateWordDto) {
     const wordsFromText = extractWordsFromText(text);
 
-    const dbRawWords = await this.wordsRepository.find({
-      select: {
-        word: true,
-        id: true,
-      },
-    });
-
-    const wordsFromDb = dbRawWords.map(({ word }) => word);
-
-    const newWords = extractNewWords(wordsFromText, wordsFromDb);
-
-    return Promise.all(
-      newWords.map((word) => this.wordsRepository.save({ word })),
-    );
+    return this.dictionaryApiModule.getWordsFromDb(wordsFromText);
   }
 
   async create(createWordDto: CreateWordDto) {
@@ -49,7 +38,11 @@ export class WordsService {
   }
 
   findAll() {
-    return this.wordsRepository.find();
+    return this.wordsRepository.find({
+      relations: {
+        partOfSpeech: true,
+      },
+    });
   }
 
   findAllByStatus(status: WordStatus) {
