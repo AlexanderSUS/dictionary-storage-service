@@ -6,6 +6,9 @@ import { WordsModule } from './words/words.module';
 import { DataSource } from 'typeorm';
 import { DictionaryApiModule } from './dictionary-api/dictionary-api.module';
 import 'dotenv';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,9 +24,10 @@ import 'dotenv';
       synchronize: true,
     }),
     DictionaryApiModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
