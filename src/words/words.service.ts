@@ -39,11 +39,7 @@ export class WordsService {
   }
 
   findAll() {
-    return this.wordsRepository.find({
-      relations: {
-        partOfSpeech: true,
-      },
-    });
+    return this.wordsRepository.find();
   }
 
   findAllByStatus(status: WordStatus) {
