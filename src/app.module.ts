@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { WordsModule } from './words/words.module';
 import { DataSource } from 'typeorm';
 import { DictionaryApiModule } from './dictionary-api/dictionary-api.module';
+import { WordsStorageModule } from './words-storage/words-storage.module';
 import 'dotenv';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     DictionaryApiModule,
     AuthModule,
+    WordsStorageModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

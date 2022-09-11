@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WordStatus } from 'src/const/enum';
-import { DictionaryApiService } from 'src/dictionary-api/dictionary-api.service';
 import extractWordsFromText from 'src/utils/handleText';
+import { WordsStorageService } from 'src/words-storage/words-storage.service';
 import { Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
@@ -11,15 +11,15 @@ import { Word } from './entities/word.entity';
 @Injectable()
 export class WordsService {
   constructor(
+    private readonly wordsStorage: WordsStorageService,
     @InjectRepository(Word)
     private wordsRepository: Repository<Word>,
-    private dictionaryApiModule: DictionaryApiService,
   ) {}
 
   async createFromText({ text }: CreateWordDto) {
     const wordsFromText = extractWordsFromText(text);
 
-    return this.dictionaryApiModule.getWordsFromDb(wordsFromText);
+    return this.wordsStorage.getWordsFromDb(wordsFromText);
   }
 
   async create(createWordDto: CreateWordDto) {
@@ -33,9 +33,7 @@ export class WordsService {
       return 'This word allready in your database';
     }
 
-    const wordsFromText = extractWordsFromText(word);
-
-    return this.dictionaryApiModule.getWordsFromDb(wordsFromText);
+    return this.wordsStorage.getWordsFromDb([createWordDto.text]);
   }
 
   findAll() {
