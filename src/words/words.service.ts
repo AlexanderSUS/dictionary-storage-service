@@ -22,7 +22,7 @@ export class WordsService {
     });
 
     if (wordFromDb) {
-      return 'This word allready in your database';
+      return 'This word already in your database';
     }
 
     return this.wordsStorage.getWordsFromDb([word]);

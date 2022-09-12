@@ -2,9 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
 import { DICTIONARY_API_URL } from 'src/const/const';
-import { Word } from 'src/words/entities/word.entity';
-import getPhonetic from 'src/utils/getPhonetic';
-import getAudio from 'src/utils/getAutio';
+import parseDictionaryApiData from 'src/utils/parseDictionaryApiData';
 
 @Injectable()
 export class DictionaryApiService {
@@ -38,25 +36,7 @@ export class DictionaryApiService {
     }, [] as DictionaryApiData[][]);
 
     const found = apiWordsData.map((wordDataArray) => {
-      const [element0] = wordDataArray;
-
-      const phonetic = getPhonetic(wordDataArray);
-
-      const audio = getAudio(wordDataArray);
-
-      const partOfSpeech = Array.from(
-        new Set(element0.meanings.map((meaning) => meaning.partOfSpeech)),
-      );
-
-      const wordEntity = new Word();
-
-      wordEntity.word = element0.word;
-      wordEntity.phonetic = phonetic;
-      wordEntity.audio = audio;
-      wordEntity.partOfSpeech = partOfSpeech;
-      wordEntity.meaning = element0.meanings;
-
-      return wordEntity;
+      return parseDictionaryApiData(wordDataArray);
     });
 
     return { found, notFound };

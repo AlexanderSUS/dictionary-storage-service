@@ -1,17 +1,17 @@
 import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
 
-const getPhonetic = (dataArray: DictionaryApiData[]) => {
-  const [element0, element1] = dataArray;
+const getPhonetic = (data: DictionaryApiData[]) => {
+  let phonetic: null | string = null;
 
-  if (element0 && element0.phonetic) {
-    return element0.phonetic;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].phonetic) {
+      phonetic = data[i].phonetic;
+
+      return phonetic;
+    }
   }
 
-  if (element1 && element1.phonetic) {
-    return element1.phonetic;
-  }
-
-  return null;
+  return phonetic;
 };
 
 export default getPhonetic;

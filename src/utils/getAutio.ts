@@ -1,27 +1,21 @@
 import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
 
-const getAudio = (dataArray: DictionaryApiData[]) => {
-  const [element0, element1] = dataArray;
+const getAudio = (data: DictionaryApiData[]) => {
+  let audio: null | string = null;
 
-  if (
-    element0 &&
-    element0.phonetics &&
-    element0.phonetics[0] &&
-    element0.phonetics[0].audio
-  ) {
-    return element0.phonetics[0].audio;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].phonetics && data[i].phonetics.length) {
+      for (let j = 0; j < data[i].phonetics.length; j++) {
+        if (data[i].phonetics[j].audio) {
+          audio = data[i].phonetics[j].audio;
+
+          return audio;
+        }
+      }
+    }
   }
 
-  if (
-    element1 &&
-    element1.phonetics &&
-    element1.phonetics[0] &&
-    element1.phonetics[0].audio
-  ) {
-    return element1.phonetics[0].audio;
-  }
-
-  return null;
+  return audio;
 };
 
 export default getAudio;

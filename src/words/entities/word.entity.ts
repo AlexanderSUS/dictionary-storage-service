@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { WordStatus } from 'src/const/enum';
-import { Meaning } from 'src/types/dictionaryApiResponce';
+import { WordEntityMeaning } from 'src/types/textProcessing';
 
 @Entity()
 export class Word {
@@ -20,7 +20,7 @@ export class Word {
   partOfSpeech: string[];
 
   @Column({ type: 'json' })
-  meaning: Meaning[];
+  meaning: WordEntityMeaning[];
 
   @Column({
     type: 'enum',
