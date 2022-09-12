@@ -23,9 +23,10 @@ export class WordsStorageService {
       words.map((word) => this.wordsRepository.findOneBy({ word })),
     );
 
-    wordsFromDb.forEach((value, index) => {
-      if (value) {
-        requestedWords.found.push(value);
+    wordsFromDb.forEach((word, index) => {
+      if (word) {
+        requestedWords.found.push(word);
+        this.updateWordOccourrence(word);
       } else {
         requestedWords.notFound.push(words[index]);
       }
@@ -47,5 +48,9 @@ export class WordsStorageService {
     }
 
     return requestedWords;
+  }
+
+  private updateWordOccourrence(word: Word) {
+    this.wordsRepository.save({ ...word, occourrence: word.occourrence + 1 });
   }
 }

@@ -28,4 +28,7 @@ export class Word {
     default: WordStatus.NEW,
   })
   status: WordStatus;
+
+  @Column({ default: 0 })
+  occourrence: number;
 }
