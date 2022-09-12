@@ -1,3 +1,5 @@
+import { Word } from 'src/words/entities/word.entity';
+
 export type RawDataSet = {
   sentence: string;
   words: string[];
@@ -11,4 +13,9 @@ export type WordEntityMeaning = {
   }>;
   synonyms: string[];
   antonyms: string[];
+};
+
+export type RequestedWords = {
+  found: Word[];
+  notFound: string[];
 };
