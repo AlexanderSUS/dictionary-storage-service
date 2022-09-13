@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
 import { DICTIONARY_API_URL } from 'src/const/const';
 import parseDictionaryApiData from 'src/utils/parseDictionaryApiData';
+import { RequestedWords } from 'src/types/textProcessing';
 
 @Injectable()
 export class DictionaryApiService {
@@ -21,24 +22,20 @@ export class DictionaryApiService {
   }
 
   async getWordsFromApi(words: string[]) {
-    const notFound: string[] = [];
+    const requestedWords: RequestedWords = { found: [], notFound: [] };
 
     const dataFromApi = await Promise.all(
       words.map((word) => this.getWord(word)),
     );
 
-    const apiWordsData = dataFromApi.reduce((acc, value, index) => {
-      if (typeof value === 'string') {
-        notFound.push(words[index]);
-      } else acc.push(value);
-
-      return acc;
-    }, [] as DictionaryApiData[][]);
-
-    const found = apiWordsData.map((wordDataArray) => {
-      return parseDictionaryApiData(wordDataArray);
+    dataFromApi.forEach((data, index) => {
+      if (typeof data === 'string') {
+        requestedWords.notFound.push(words[index]);
+      } else {
+        requestedWords.found.push(parseDictionaryApiData(data));
+      }
     });
 
-    return { found, notFound };
+    return requestedWords;
   }
 }
