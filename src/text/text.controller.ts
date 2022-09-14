@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Req } from '@nestjs/common';
 import { TextService } from './text.service';
 import { CreateTextDto } from './dto/create-text.dto';
 
@@ -7,7 +7,7 @@ export class TextController {
   constructor(private readonly textService: TextService) {}
 
   @Post()
-  create(@Body() createTextDto: CreateTextDto) {
-    return this.textService.create(createTextDto);
+  create(@Body() createTextDto: CreateTextDto, @Req() req) {
+    return this.textService.create(createTextDto, req.user.userId);
   }
 }

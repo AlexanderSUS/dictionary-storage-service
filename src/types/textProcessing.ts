@@ -1,4 +1,5 @@
 import NotFoundWord from 'src/words-storage/entities/notFoundWord.entity';
+import { UserWord } from 'src/words/entities/userWord.entity';
 import { Word } from 'src/words/entities/word.entity';
 
 export type RawDataSet = {
@@ -25,3 +26,8 @@ export type RequestedNotFroundWords = {
   found: NotFoundWord[];
   notFound: string[];
 };
+
+export type RequestedUserWords = {
+  found: UserWord[];
+  notFound: string[];
+}
