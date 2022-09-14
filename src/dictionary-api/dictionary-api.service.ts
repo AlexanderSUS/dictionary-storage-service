@@ -22,20 +22,12 @@ export class DictionaryApiService {
   }
 
   async getWordsFromApi(words: string[]) {
-    const requestedWords: RequestedWords = { found: [], notFound: [] };
+    const dataFromApi = await Promise.all( words.map((word) => this.getWord(word)));
 
-    const dataFromApi = await Promise.all(
-      words.map((word) => this.getWord(word)),
-    );
+    return dataFromApi.reduce((acc, data, index) => {
+      typeof data === 'string' ? acc.notFound.push(words[index]) : acc.found.push(parseDictionaryApiData(data))
 
-    dataFromApi.forEach((data, index) => {
-      if (typeof data === 'string') {
-        requestedWords.notFound.push(words[index]);
-      } else {
-        requestedWords.found.push(parseDictionaryApiData(data));
-      }
-    });
-
-    return requestedWords;
+      return acc;
+    }, { found: [], notFound: [] } as RequestedWords)
   }
 }
