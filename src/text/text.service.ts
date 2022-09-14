@@ -7,61 +7,66 @@ import { UserWord } from 'src/words/entities/userWord.entity';
 import { Repository } from 'typeorm';
 import { RequestedUserWords } from 'src/types/textProcessing';
 import normalizeWord from 'src/utils/normalizeWord';
+import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
 
 @Injectable()
 export class TextService {
-  constructor(private readonly wordsStorage: WordsStorageService,
+  constructor(
+    private readonly wordsStorage: WordsStorageService,
     @InjectRepository(UserWord)
-    private readonly userWordsRepository: Repository<UserWord>
-    ) {}
+    private readonly userWordsRepository: Repository<UserWord>,
+  ) {}
 
   async create({ text }: CreateTextDto, userId: string) {
     const wordsFromText = extractWordsFromText(text);
 
-    const userWords = await Promise.all(wordsFromText.map((word) => 
-        this.userWordsRepository.findOne({
-          where: {
-            user: { id: userId },
-            word: { word },
-          },
-          relations: {
-            word: true,
-          },
-        })
-    )); 
+    const userWords = await Promise.all(
+      wordsFromText.map((word) =>
+        this.userWordsRepository.findOne(
+          getFindOneOptionsByUserId(word, userId),
+        ),
+      ),
+    );
 
-    const requestedWords: RequestedUserWords = userWords.reduce((acc, word, index) => {
-      word ? acc.found.push(word) : acc.notFound.push(wordsFromText[index]);
+    const requestedWords = userWords.reduce(
+      (acc, word, index) => {
+        word ? acc.found.push(word) : acc.notFound.push(wordsFromText[index]);
 
-     return acc;
-    }, { found: [], notFound: []} as RequestedUserWords)
+        return acc;
+      },
+      { found: [], notFound: [] } as RequestedUserWords,
+    );
 
     if (!requestedWords.notFound.length) {
-      return { 
+      return {
         old: requestedWords.found.map(normalizeWord),
         new: [],
         notFound: [],
       };
     }
 
-    const newWords =  await this.wordsStorage.getWordsFromDb(requestedWords.notFound);
-   
+    const newWords = await this.wordsStorage.getWordsFromDb(
+      requestedWords.notFound,
+    );
+
     if (!newWords.found.length) {
       return {
         old: requestedWords.found.map(normalizeWord),
         new: [],
         notFound: requestedWords.notFound,
-      }
+      };
     }
 
     const newUserWords = await Promise.all(
-      newWords.found.map((word) => this.userWordsRepository.save({ user: { id: userId }, word }))
-    )
+      newWords.found.map((word) =>
+        this.userWordsRepository.save({ user: { id: userId }, word }),
+      ),
+    );
 
     return {
       old: requestedWords.found.map(normalizeWord),
       new: newUserWords.map(normalizeWord),
       notFound: newWords.notFound,
-    }
+    };
   }
 }

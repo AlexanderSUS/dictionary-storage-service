@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
 import getPartOfSpeechCriterias from 'src/utils/getPartOfSpeechCriteria';
 import normalizeWord from 'src/utils/normalizeWord';
 import { WordsStorageService } from 'src/words-storage/words-storage.service';
@@ -18,15 +19,9 @@ export class WordsService {
   ) {}
 
   async create({ word }: CreateWordDto, userId: string) {
-    const userWord = await this.userWordRepository.findOne({
-      where: {
-        user: { id: userId },
-        word: { word },
-      },
-      relations: {
-        word: true,
-      },
-    });
+    const userWord = await this.userWordRepository.findOne(
+      getFindOneOptionsByUserId(word, userId),
+    );
 
     if (userWord) {
       throw new HttpException(
