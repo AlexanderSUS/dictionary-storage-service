@@ -15,28 +15,20 @@ export class WordsStorageService {
     private readonly dictionaryApiService: DictionaryApiService,
     @InjectRepository(Word)
     private wordsRepository: Repository<Word>,
-
     @InjectRepository(NotFoundWord)
     private notFoundWordsRepository: Repository<NotFoundWord>,
   ) {}
 
   private async findWordsInDb(words: string[]) {
-    const requestedWords: RequestedWords = { found: [], notFound: [] };
-
     const wordsFromDb = await Promise.all(
       words.map((word) => this.wordsRepository.findOneBy({ word })),
     );
+    
+    return wordsFromDb.reduce((acc, word, index) => {
+      word ? acc.found.push(word) : acc.notFound.push(words[index]);
 
-    wordsFromDb.forEach((word, index) => {
-      if (word) {
-        requestedWords.found.push(word);
-        this.updateWordOccourrence(word);
-      } else {
-        requestedWords.notFound.push(words[index]);
-      }
-    });
-
-    return requestedWords;
+      return acc;
+    }, { found: [], notFound: []} as RequestedWords)
   }
 
   private async findWordsInNotFoundRepository(words: string[]) {
@@ -44,18 +36,11 @@ export class WordsStorageService {
       words.map((word) => this.notFoundWordsRepository.findOneBy({ word })),
     );
 
-    const requestedWords: RequestedNotFroundWords = { found: [], notFound: [] };
+    return notFoundWordsFromDb.reduce((acc, word, index) => {
+      word ? acc.found.push(word)  : acc.notFound.push(words[index])
 
-    notFoundWordsFromDb.forEach((word, index) => {
-      if (word) {
-        requestedWords.found.push(word);
-        this.updateNotFoundWordOccourrence(word);
-      } else {
-        requestedWords.notFound.push(words[index]);
-      }
-    });
-
-    return requestedWords;
+      return acc;
+    }, { found: [], notFound: [] } as RequestedNotFroundWords)
   }
 
   private async findWordsViaApi(words: string[]) {
@@ -67,9 +52,7 @@ export class WordsStorageService {
   }
 
   private saveNotFoundWords(words: string[]) {
-    return Promise.all(
-      words.map((word) => this.notFoundWordsRepository.save({ word })),
-    );
+    return Promise.all( words.map((word) => this.notFoundWordsRepository.save({ word })));
   }
 
   private updateWordOccourrence(word: Word) {
@@ -86,6 +69,8 @@ export class WordsStorageService {
   async getWordsFromDb(words: string[]) {
     const wordsFromDb = await this.findWordsInDb(words);
 
+    wordsFromDb.found.map((word) => this.updateWordOccourrence(word))
+
     if (!wordsFromDb.notFound.length) {
       return wordsFromDb;
     }
@@ -93,6 +78,8 @@ export class WordsStorageService {
     const notFoundWordsFromDb = await this.findWordsInNotFoundRepository(
       wordsFromDb.notFound,
     );
+
+    notFoundWordsFromDb.found.map((word) => this.updateNotFoundWordOccourrence(word));
 
     if (!notFoundWordsFromDb.notFound.length) {
       return wordsFromDb;
@@ -104,20 +91,19 @@ export class WordsStorageService {
 
     const newWordsFromDb = await this.saveNewWords(wordsFromApi.found);
 
-    this.saveNotFoundWords(wordsFromApi.notFound);
+    await this.saveNotFoundWords(wordsFromApi.notFound);
 
-    wordsFromDb.found = [...wordsFromDb.found, ...newWordsFromDb];
+    const found = [...wordsFromDb.found, ...newWordsFromDb];
+    const notFound = [...wordsFromDb.notFound];
 
     wordsFromApi.found.forEach((wordEntity) => {
-      const index = wordsFromDb.notFound.findIndex(
-        (word) => word === wordEntity.word,
-      );
+      const index = notFound.findIndex((word) => word === wordEntity.word);
 
       if (index > -1) {
-        wordsFromDb.notFound.splice(index, 1);
+        notFound.splice(index, 1);
       }
     });
 
-    return wordsFromDb;
+    return { found, notFound }
   }
 }
