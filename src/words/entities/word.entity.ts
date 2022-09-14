@@ -1,6 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { WordStatus } from 'src/const/enum';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { WordEntityMeaning } from 'src/types/textProcessing';
+import { UserWord } from './userWord.entity';
 
 @Entity()
 export class Word {
@@ -22,13 +22,9 @@ export class Word {
   @Column({ type: 'json' })
   meaning: WordEntityMeaning[];
 
-  @Column({
-    type: 'enum',
-    enum: WordStatus,
-    default: WordStatus.NEW,
-  })
-  status: WordStatus;
-
   @Column({ default: 0 })
   occourrence: number;
+
+  @OneToMany(() => UserWord, (userWord) => userWord.word)
+  userWords: UserWord[];
 }

@@ -1,7 +1,9 @@
+import { UserWord } from 'src/words/entities/userWord.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,
@@ -33,4 +35,7 @@ export class User {
     type: 'timestamp',
   })
   updatedAt: number;
+
+  @OneToMany(() => UserWord, (word) => word.user)
+  words: UserWord[];
 }
