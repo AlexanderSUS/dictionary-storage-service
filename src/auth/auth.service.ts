@@ -4,6 +4,7 @@ import * as bycrypt from 'bcrypt';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshPayload } from './interface/refreshPayload';
 
 @Injectable()
 export class AuthService {
@@ -67,15 +68,7 @@ export class AuthService {
     return tokens;
   }
 
-  async refresh({
-    id,
-    login,
-    refreshToken,
-  }: {
-    id: string;
-    login: string;
-    refreshToken: string;
-  }) {
+  async refresh({ id, login, refreshToken }: RefreshPayload) {
     const { refreshTokenHash } = await this.userService.findOne(id);
 
     if (!refreshTokenHash) {
