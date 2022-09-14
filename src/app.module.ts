@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { TextModule } from './text/text.module';
+import { PublicModule } from './public/public.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TextModule } from './text/text.module';
     AuthModule,
     WordsStorageModule,
     TextModule,
+    PublicModule
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
