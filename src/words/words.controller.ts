@@ -13,12 +13,15 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { WordsService } from './words.service';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import parseUuidOptions from 'src/const/uuid';
 import QueryDto from './dto/query.dto';
 
+@ApiTags('words')
+@ApiBearerAuth()
 @Controller('words')
 export class WordsController {
   constructor(private readonly wordsService: WordsService) {}

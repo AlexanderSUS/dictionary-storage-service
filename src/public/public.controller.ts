@@ -1,9 +1,11 @@
 import { Controller, Post, Body } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PublicService } from './public.service';
 import { CreateWordDto } from '../words/dto/create-word.dto';
 import { Public } from 'src/auth/public.decorator';
 import { CreateTextDto } from 'src/text/dto/create-text.dto';
 
+@ApiTags('public')
 @Public()
 @Controller('public')
 export class WordsController {
