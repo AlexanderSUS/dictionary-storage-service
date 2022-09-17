@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NormalizedUserWord } from 'src/types/textProcessing';
 import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
 import getPartOfSpeechCriterias from 'src/utils/getPartOfSpeechCriteria';
 import normalizeWord from 'src/utils/normalizeWord';
@@ -18,7 +19,10 @@ export class WordsService {
     private userWordRepository: Repository<UserWord>,
   ) {}
 
-  async create({ word }: CreateWordDto, userId: string) {
+  async create(
+    { word }: CreateWordDto,
+    userId: string,
+  ): Promise<NormalizedUserWord> {
     const userWord = await this.userWordRepository.findOne(
       getFindOneOptionsByUserId(word, userId),
     );
@@ -30,9 +34,7 @@ export class WordsService {
       );
     }
 
-    const { found } = await this.wordsStorage.getWordsFromDb([word]);
-
-    const [newWord] = found;
+    const newWord = await this.wordsStorage.getWordFromDb(word);
 
     if (!newWord) {
       throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
@@ -46,7 +48,7 @@ export class WordsService {
     return normalizeWord(data);
   }
 
-  async findAll(query: QueryDto, id: string) {
+  async findAll(query: QueryDto, id: string): Promise<NormalizedUserWord[]> {
     const { status, exclude, include, order, limit, offset } = query;
 
     const words = await this.userWordRepository.find({
@@ -78,7 +80,7 @@ export class WordsService {
     return words.map((word) => normalizeWord(word));
   }
 
-  async findOne(wordId: string, userId: string) {
+  async findOne(wordId: string, userId: string): Promise<NormalizedUserWord> {
     const word = await this.userWordRepository.findOne({
       where: {
         user: {
@@ -98,7 +100,11 @@ export class WordsService {
     return normalizeWord(word);
   }
 
-  async update(wordId: string, updateWordDto: UpdateWordDto, userId: string) {
+  async update(
+    wordId: string,
+    updateWordDto: UpdateWordDto,
+    userId: string,
+  ): Promise<NormalizedUserWord> {
     const word = await this.userWordRepository.findOne({
       where: {
         user: {
@@ -112,10 +118,12 @@ export class WordsService {
       throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
     }
 
-    return await this.userWordRepository.save({
+    const updatedWord = await this.userWordRepository.save({
       ...word,
       ...updateWordDto,
     });
+
+    return normalizeWord(updatedWord);
   }
 
   async remove(wordId: string, userId: string) {
@@ -132,6 +140,6 @@ export class WordsService {
       throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
     }
 
-    this.userWordRepository.remove(word);
+    await this.userWordRepository.remove(word);
   }
 }

@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { WordsStorageService } from 'src/words-storage/words-storage.service';
 import { CreateTextDto } from './dto/create-text.dto';
 import extractWordsFromText from 'src/utils/handleText';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserWord } from 'src/words/entities/userWord.entity';
 import { Repository } from 'typeorm';
-import { RequestedUserWords } from 'src/types/textProcessing';
 import normalizeWord from 'src/utils/normalizeWord';
 import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
+import { TextPostAuthResponse } from 'src/types/methodsReturnTypes';
 
 @Injectable()
 export class TextService {
@@ -17,7 +17,10 @@ export class TextService {
     private readonly userWordsRepository: Repository<UserWord>,
   ) {}
 
-  async create({ text }: CreateTextDto, userId: string) {
+  async create(
+    { text }: CreateTextDto,
+    userId: string,
+  ): Promise<TextPostAuthResponse> {
     const wordsFromText = extractWordsFromText(text);
 
     const userWords = await Promise.all(
@@ -28,45 +31,41 @@ export class TextService {
       ),
     );
 
-    const requestedWords = userWords.reduce(
+    if (!userWords.some((word) => !word)) {
+      throw new HttpException('New words not found', HttpStatus.CONFLICT);
+    }
+
+    const notFoundWords = userWords.reduce((acc, word, index) => {
+      if (!word) {
+        acc.push(wordsFromText[index]);
+      }
+      return acc;
+    }, [] as string[]);
+
+    const newWordsFromDb = await Promise.all(
+      notFoundWords.map((word) => this.wordsStorage.getWordFromDb(word)),
+    );
+
+    const { newWords, notFound } = newWordsFromDb.reduce(
       (acc, word, index) => {
-        word ? acc.found.push(word) : acc.notFound.push(wordsFromText[index]);
+        word
+          ? acc.newWords.push(word)
+          : acc.notFound.push(notFoundWords[index]);
 
         return acc;
       },
-      { found: [], notFound: [] } as RequestedUserWords,
+      { newWords: [], notFound: [] },
     );
-
-    if (!requestedWords.notFound.length) {
-      return {
-        old: requestedWords.found.map(normalizeWord),
-        new: [],
-        notFound: [],
-      };
-    }
-
-    const newWords = await this.wordsStorage.getWordsFromDb(
-      requestedWords.notFound,
-    );
-
-    if (!newWords.found.length) {
-      return {
-        old: requestedWords.found.map(normalizeWord),
-        new: [],
-        notFound: requestedWords.notFound,
-      };
-    }
 
     const newUserWords = await Promise.all(
-      newWords.found.map((word) =>
-        this.userWordsRepository.save({ user: { id: userId }, word }),
+      newWords.map((word) =>
+        this.userWordsRepository.save({ word, user: { id: userId } }),
       ),
     );
 
     return {
-      old: requestedWords.found.map(normalizeWord),
-      new: newUserWords.map(normalizeWord),
-      notFound: newWords.notFound,
+      newWords: newUserWords.map(normalizeWord),
+      notFound,
     };
   }
 }

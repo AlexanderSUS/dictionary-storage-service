@@ -1,3 +1,4 @@
+import { WordStatus } from 'src/const/enum';
 import NotFoundWord from 'src/words-storage/entities/notFoundWord.entity';
 import { UserWord } from 'src/words/entities/userWord.entity';
 import { Word } from 'src/words/entities/word.entity';
@@ -35,4 +36,9 @@ export type RequestedUserWords = {
 export type PublicWord = Pick<Word, 'word' | 'meaning' | 'partOfSpeech'> & {
   phonetic: string | null;
   audio: string | null;
+};
+
+export type NormalizedUserWord = Omit<Word, 'id'> & {
+  id: string;
+  status: WordStatus;
 };

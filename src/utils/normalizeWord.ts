@@ -1,21 +1,12 @@
+import { NormalizedUserWord } from 'src/types/textProcessing';
 import { UserWord } from 'src/words/entities/userWord.entity';
 
-function normalizeWord(userWord: UserWord) {
+function normalizeWord(userWord: UserWord): NormalizedUserWord {
   const { id, status, word: wordData } = userWord;
 
-  const { word, phonetic, audio, partOfSpeech, meaning, occourrence } =
-    wordData;
+  const { id: _, ...data } = wordData;
 
-  return {
-    id,
-    word,
-    status,
-    occourrence,
-    phonetic,
-    audio,
-    partOfSpeech,
-    meaning,
-  };
+  return { id, status, ...data };
 }
 
 export default normalizeWord;

@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTextDto } from 'src/text/dto/create-text.dto';
+import { PublicWord, RequestedWords } from 'src/types/textProcessing';
 import extractWordsFromText from 'src/utils/handleText';
 import normalizePublicWord from 'src/utils/normalizePublicWord';
 import { WordsStorageService } from 'src/words-storage/words-storage.service';
@@ -9,23 +10,28 @@ import { CreateWordDto } from 'src/words/dto/create-word.dto';
 export class PublicService {
   constructor(private readonly wordsStorage: WordsStorageService) {}
 
-  async parseText({ text }: CreateTextDto) {
+  async parseText({ text }: CreateTextDto): Promise<RequestedWords> {
     const wordsFromText = extractWordsFromText(text);
 
-    const { found, notFound } = await this.wordsStorage.getWordsFromDb(
-      wordsFromText,
+    const wordsFromDb = await Promise.all(
+      wordsFromText.map((word) => this.wordsStorage.getWordFromDb(word)),
     );
 
-    return {
-      found: found.length ? found.map(normalizePublicWord) : [],
-      notFound,
-    };
+    return wordsFromDb.reduce(
+      (acc, word, index) => {
+        word ? acc.found.push(word) : acc.notFound.push(wordsFromText[index]);
+
+        return acc;
+      },
+      {
+        found: [],
+        notFound: [],
+      } as RequestedWords,
+    );
   }
 
-  async findWord({ word }: CreateWordDto) {
-    const { found } = await this.wordsStorage.getWordsFromDb([word]);
-
-    const [wordEntity] = found;
+  async findWord({ word }: CreateWordDto): Promise<PublicWord> {
+    const wordEntity = await this.wordsStorage.getWordFromDb(word);
 
     if (!wordEntity) {
       throw new HttpException('Word not found', HttpStatus.NOT_FOUND);

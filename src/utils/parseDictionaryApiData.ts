@@ -4,7 +4,7 @@ import getAudio from './getAutio';
 import getMeanings from './getMeanings';
 import getPhonetic from './getPhonetic';
 
-function parseDictionaryApiData(data: DictionaryApiData[]) {
+function parseDictionaryApiData(data: DictionaryApiData[]): Word {
   const [{ word, meanings: dataMeanings }] = data;
 
   const wordEntity = new Word();
