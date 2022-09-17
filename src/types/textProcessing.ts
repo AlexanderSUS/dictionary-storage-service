@@ -12,7 +12,7 @@ export type WordEntityMeaning = {
   partOfSpeech: string;
   definitions: Array<{
     definition: string;
-    expample?: string;
+    example?: string;
   }>;
   synonyms: string[];
   antonyms: string[];
@@ -38,7 +38,7 @@ export type PublicWord = Pick<Word, 'word' | 'meaning' | 'partOfSpeech'> & {
   audio: string | null;
 };
 
-export type NormalizedUserWord = Omit<Word, 'id'> & {
+export type NormalizedUserWord = Omit<Word, 'id' | 'userWords'> & {
   id: string;
   status: WordStatus;
 };

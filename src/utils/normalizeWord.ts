@@ -4,7 +4,7 @@ import { UserWord } from 'src/words/entities/userWord.entity';
 function normalizeWord(userWord: UserWord): NormalizedUserWord {
   const { id, status, word: wordData } = userWord;
 
-  const { id: _, ...data } = wordData;
+  const { id: _, userWords, ...data } = wordData;
 
   return { id, status, ...data };
 }
