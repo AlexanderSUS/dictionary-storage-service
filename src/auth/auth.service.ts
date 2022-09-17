@@ -1,10 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import * as bycrypt from 'bcrypt';
-import { IUser } from 'src/user/interfaces/user.interface';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshPayload } from './interface/refreshPayload';
+import {
+  SignUpOkMessage,
+  Tokens,
+  UserWithoutPassword,
+} from 'src/types/methodsReturnTypes';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +17,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(login: string, pass: string): Promise<IUser | null> {
+  async validateUser(
+    login: string,
+    pass: string,
+  ): Promise<UserWithoutPassword | null> {
     const user = await this.userService.findOneByLogin(login);
 
     const isPasswordMatch = await bycrypt.compare(pass, user.password);
@@ -27,7 +34,7 @@ export class AuthService {
     return null;
   }
 
-  private getTokens(payload: { login: string; userId: string }) {
+  private getTokens(payload: { login: string; userId: string }): Tokens {
     const access_token = this.jwtService.sign(payload, {
       expiresIn: process.env.TOKEN_EXPIRE_TIME,
       secret: process.env.JWT_SECRET_KEY,
@@ -41,7 +48,7 @@ export class AuthService {
     return { access_token, refresh_token };
   }
 
-  async signUp(createUserDto: CreateUserDto) {
+  async signUp(createUserDto: CreateUserDto): Promise<SignUpOkMessage> {
     const password = await bycrypt.hash(
       createUserDto.password,
       parseInt(process.env.CRYPT_SALT),
@@ -52,7 +59,7 @@ export class AuthService {
     return { msg: 'User was successfully created' };
   }
 
-  async login(user: IUser) {
+  async login(user: UserWithoutPassword): Promise<Tokens> {
     const tokens = this.getTokens({
       login: user.login,
       userId: user.id,
@@ -68,7 +75,7 @@ export class AuthService {
     return tokens;
   }
 
-  async refresh({ id, login, refreshToken }: RefreshPayload) {
+  async refresh({ id, login, refreshToken }: RefreshPayload): Promise<Tokens> {
     const { refreshTokenHash } = await this.userService.findOne(id);
 
     if (!refreshTokenHash) {

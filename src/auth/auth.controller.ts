@@ -27,15 +27,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Request() req) {
-    const { access_token, refresh_token } = await this.authService.login(
-      req.user,
-    );
-
-    return {
-      accessToken: access_token,
-      refreshToken: refresh_token,
-    };
+  login(@Request() req) {
+    return this.authService.login(req.user);
   }
 
   @Public()

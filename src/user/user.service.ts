@@ -4,8 +4,8 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { IUser } from './interfaces/user.interface';
 import handleUserForResonse from 'src/utils/handleUserForResponse';
+import { UserWithoutPassword } from 'src/types/methodsReturnTypes';
 
 @Injectable()
 export class UserService {
@@ -14,7 +14,7 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(userDto: CreateUserDto): Promise<IUser> {
+  async create(userDto: CreateUserDto): Promise<UserWithoutPassword> {
     const existedUser = await this.userRepository.findOneBy({
       login: userDto.login,
     });
@@ -31,7 +31,7 @@ export class UserService {
     return handleUserForResonse(user);
   }
 
-  async findAll(): Promise<IUser[]> {
+  async findAll(): Promise<UserWithoutPassword[]> {
     const users = await this.userRepository.find();
 
     return users.map((user) => handleUserForResonse(user));
