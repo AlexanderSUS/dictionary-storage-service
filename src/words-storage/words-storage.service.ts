@@ -23,12 +23,15 @@ export class WordsStorageService {
     const wordsFromDb = await Promise.all(
       words.map((word) => this.wordsRepository.findOneBy({ word })),
     );
-    
-    return wordsFromDb.reduce((acc, word, index) => {
-      word ? acc.found.push(word) : acc.notFound.push(words[index]);
 
-      return acc;
-    }, { found: [], notFound: []} as RequestedWords)
+    return wordsFromDb.reduce(
+      (acc, word, index) => {
+        word ? acc.found.push(word) : acc.notFound.push(words[index]);
+
+        return acc;
+      },
+      { found: [], notFound: [] } as RequestedWords,
+    );
   }
 
   private async findWordsInNotFoundRepository(words: string[]) {
@@ -36,11 +39,14 @@ export class WordsStorageService {
       words.map((word) => this.notFoundWordsRepository.findOneBy({ word })),
     );
 
-    return notFoundWordsFromDb.reduce((acc, word, index) => {
-      word ? acc.found.push(word)  : acc.notFound.push(words[index])
+    return notFoundWordsFromDb.reduce(
+      (acc, word, index) => {
+        word ? acc.found.push(word) : acc.notFound.push(words[index]);
 
-      return acc;
-    }, { found: [], notFound: [] } as RequestedNotFroundWords)
+        return acc;
+      },
+      { found: [], notFound: [] } as RequestedNotFroundWords,
+    );
   }
 
   private async findWordsViaApi(words: string[]) {
@@ -52,7 +58,9 @@ export class WordsStorageService {
   }
 
   private saveNotFoundWords(words: string[]) {
-    return Promise.all( words.map((word) => this.notFoundWordsRepository.save({ word })));
+    return Promise.all(
+      words.map((word) => this.notFoundWordsRepository.save({ word })),
+    );
   }
 
   private updateWordOccourrence(word: Word) {
@@ -69,7 +77,7 @@ export class WordsStorageService {
   async getWordsFromDb(words: string[]) {
     const wordsFromDb = await this.findWordsInDb(words);
 
-    wordsFromDb.found.map((word) => this.updateWordOccourrence(word))
+    wordsFromDb.found.map((word) => this.updateWordOccourrence(word));
 
     if (!wordsFromDb.notFound.length) {
       return wordsFromDb;
@@ -79,7 +87,9 @@ export class WordsStorageService {
       wordsFromDb.notFound,
     );
 
-    notFoundWordsFromDb.found.map((word) => this.updateNotFoundWordOccourrence(word));
+    notFoundWordsFromDb.found.map((word) =>
+      this.updateNotFoundWordOccourrence(word),
+    );
 
     if (!notFoundWordsFromDb.notFound.length) {
       return wordsFromDb;
@@ -104,6 +114,6 @@ export class WordsStorageService {
       }
     });
 
-    return { found, notFound }
+    return { found, notFound };
   }
 }

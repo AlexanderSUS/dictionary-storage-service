@@ -25,26 +25,17 @@ export class WordsService {
 
     if (userWord) {
       throw new HttpException(
-        {
-          message: 'This word already in your srore',
-          word: normalizeWord(userWord),
-        },
-        HttpStatus.OK,
+        'This word already in your srore',
+        HttpStatus.CONFLICT,
       );
     }
 
-    const requestedWords = await this.wordsStorage.getWordsFromDb([word]);
+    const { found } = await this.wordsStorage.getWordsFromDb([word]);
 
-    const [newWord] = requestedWords.found;
+    const [newWord] = found;
 
     if (!newWord) {
-      throw new HttpException(
-        {
-          message: 'Word not found',
-          word,
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
     }
 
     const data = await this.userWordRepository.save({

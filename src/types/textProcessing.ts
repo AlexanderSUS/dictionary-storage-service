@@ -30,4 +30,9 @@ export type RequestedNotFroundWords = {
 export type RequestedUserWords = {
   found: UserWord[];
   notFound: string[];
-}
+};
+
+export type PublicWord = Pick<Word, 'word' | 'meaning' | 'partOfSpeech'> & {
+  phonetic: string | null;
+  audio: string | null;
+};
