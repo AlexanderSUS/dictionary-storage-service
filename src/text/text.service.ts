@@ -7,7 +7,7 @@ import { UserWord } from 'src/words/entities/userWord.entity';
 import { Repository } from 'typeorm';
 import modifyUserWord from 'src/utils/modifyUserWord';
 import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
-import { TextPostAuthResponse } from 'src/types/methodsReturnTypes';
+import { TextResponseDto } from './dto/text-response.dts';
 
 @Injectable()
 export class TextService {
@@ -20,7 +20,7 @@ export class TextService {
   async create(
     { text }: CreateTextDto,
     userId: string,
-  ): Promise<TextPostAuthResponse> {
+  ): Promise<TextResponseDto> {
     const wordsFromText = extractWordsFromText(text);
 
     const userWords = await Promise.all(
@@ -32,7 +32,7 @@ export class TextService {
     );
 
     if (!userWords.some((word) => !word)) {
-      throw new HttpException('New words not found', HttpStatus.CONFLICT);
+      throw new HttpException('New words not found', HttpStatus.NOT_FOUND);
     }
 
     const notFoundWords = userWords.reduce((acc, word, index) => {
