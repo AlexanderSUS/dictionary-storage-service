@@ -1,7 +1,7 @@
 import { Meaning } from 'src/types/dictionaryApiResponce';
-import { WordEntityMeaning } from 'src/types/textProcessing';
+import { MeaningDto } from 'src/words/dto/meaning.dto';
 
-function getMeanings(meanings: Meaning[]): Array<WordEntityMeaning> {
+function getMeanings(meanings: Meaning[]): MeaningDto[] {
   return meanings.map((meaning) => {
     const partOfSpeech = meaning.partOfSpeech;
     const synonyms = meaning.synonyms;

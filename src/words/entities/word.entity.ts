@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { WordEntityMeaning } from 'src/types/textProcessing';
 import { UserWord } from './userWord.entity';
+import { MeaningDto } from '../dto/meaning.dto';
 
 @Entity()
 export class Word {
@@ -20,7 +20,7 @@ export class Word {
   partOfSpeech: string[];
 
   @Column({ type: 'json' })
-  meaning: WordEntityMeaning[];
+  meaning: MeaningDto[];
 
   @Column({ default: 0 })
   occourrence: number;
