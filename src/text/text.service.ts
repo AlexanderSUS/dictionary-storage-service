@@ -5,7 +5,7 @@ import extractWordsFromText from 'src/utils/handleText';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserWord } from 'src/words/entities/userWord.entity';
 import { Repository } from 'typeorm';
-import normalizeWord from 'src/utils/normalizeWord';
+import modifyUserWord from 'src/utils/modifyUserWord';
 import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
 import { TextPostAuthResponse } from 'src/types/methodsReturnTypes';
 
@@ -64,7 +64,7 @@ export class TextService {
     );
 
     return {
-      newWords: newUserWords.map(normalizeWord),
+      newWords: newUserWords.map(modifyUserWord),
       notFound,
     };
   }

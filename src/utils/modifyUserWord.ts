@@ -1,7 +1,7 @@
-import { NormalizedUserWord } from 'src/types/textProcessing';
+import { ModifiedUserWordDto } from 'src/words/dto/modified-user-word.dto';
 import { UserWord } from 'src/words/entities/userWord.entity';
 
-function normalizeWord(userWord: UserWord): NormalizedUserWord {
+function modifyUserWord(userWord: UserWord): ModifiedUserWordDto {
   const { id, status, word: wordData } = userWord;
 
   const { id: _, userWords, ...data } = wordData;
@@ -9,4 +9,4 @@ function normalizeWord(userWord: UserWord): NormalizedUserWord {
   return { id, status, ...data };
 }
 
-export default normalizeWord;
+export default modifyUserWord;

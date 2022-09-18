@@ -1,4 +1,10 @@
-import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNumberString,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 import { SordOrder, WordStatus } from 'src/const/enum';
 
 export default class QueryDto {
@@ -19,9 +25,11 @@ export default class QueryDto {
 
   @IsNumberString()
   @IsOptional()
+  @IsPositive()
   limit?: string;
 
   @IsNumberString()
   @IsOptional()
+  @IsPositive()
   offset?: string;
 }
