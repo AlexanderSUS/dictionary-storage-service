@@ -10,7 +10,10 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  const docsConfig = new DocumentBuilder().setTitle('Dictionary-store').build();
+  const docsConfig = new DocumentBuilder()
+    .setTitle('Dictionary-store')
+    .addBearerAuth()
+    .build();
 
   const document = SwaggerModule.createDocument(app, docsConfig);
   SwaggerModule.setup('docs', app, document);

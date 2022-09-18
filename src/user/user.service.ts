@@ -21,8 +21,8 @@ export class UserService {
 
     if (existedUser) {
       throw new HttpException(
-        'User with this login already exist',
-        HttpStatus.FORBIDDEN,
+        'User with given login does already exist',
+        HttpStatus.CONFLICT,
       );
     }
 

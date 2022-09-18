@@ -4,11 +4,8 @@ import * as bycrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshPayload } from './interface/refreshPayload';
-import {
-  SignUpOkMessage,
-  Tokens,
-  UserWithoutPassword,
-} from 'src/types/methodsReturnTypes';
+import { UserWithoutPassword } from 'src/types/methodsReturnTypes';
+import TokensDto from './dto/tokens.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +31,7 @@ export class AuthService {
     return null;
   }
 
-  private getTokens(payload: { login: string; userId: string }): Tokens {
+  private getTokens(payload: { login: string; userId: string }): TokensDto {
     const access_token = this.jwtService.sign(payload, {
       expiresIn: process.env.TOKEN_EXPIRE_TIME,
       secret: process.env.JWT_SECRET_KEY,
@@ -48,7 +45,7 @@ export class AuthService {
     return { access_token, refresh_token };
   }
 
-  async signUp(createUserDto: CreateUserDto): Promise<SignUpOkMessage> {
+  async signUp(createUserDto: CreateUserDto): Promise<string> {
     const password = await bycrypt.hash(
       createUserDto.password,
       parseInt(process.env.CRYPT_SALT),
@@ -56,10 +53,10 @@ export class AuthService {
 
     await this.userService.create({ ...createUserDto, password });
 
-    return { msg: 'User was successfully created' };
+    return 'User was successfully created';
   }
 
-  async login(user: UserWithoutPassword): Promise<Tokens> {
+  async login(user: UserWithoutPassword): Promise<TokensDto> {
     const tokens = this.getTokens({
       login: user.login,
       userId: user.id,
@@ -75,7 +72,11 @@ export class AuthService {
     return tokens;
   }
 
-  async refresh({ id, login, refreshToken }: RefreshPayload): Promise<Tokens> {
+  async refresh({
+    id,
+    login,
+    refreshToken,
+  }: RefreshPayload): Promise<TokensDto> {
     const { refreshTokenHash } = await this.userService.findOne(id);
 
     if (!refreshTokenHash) {
