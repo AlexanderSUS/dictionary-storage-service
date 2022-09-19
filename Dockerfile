@@ -1,15 +1,24 @@
-FROM node:16.16.0-alpine
+FROM node:16.16.0-alpine as builder
+
+ENV NODE_ENV build
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY . /app
 
-RUN npm install 
+RUN npm ci \
+    && npm run build \
+    && npm prune --production
 
-COPY . .
+FROM node:16.16.0-alpine
+
+ENV NODE_ENV production
 
 USER node
+WORKDIR /app
 
-EXPOSE 4000
+COPY --from=builder /app/package*.json /app/
+COPY --from=builder /app/node_modules/ /app/node_modules/
+COPY --from=builder /app/dist/ /app/dist/
 
-CMD ["npm", "run", "start:dev"]
+CMD ["node", "dist/main.js"]
