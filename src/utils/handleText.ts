@@ -1,36 +1,3 @@
-import { LINE_BRAKE } from 'src/const/const';
-
-// TODO REMOVE IF NO NEEDED
-function markTerminator(text: string) {
-  const processedText: string[] = [];
-
-  let terminatorFlag = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-
-    if (terminatorFlag && char === ' ') {
-      processedText.push(LINE_BRAKE);
-
-      terminatorFlag = false;
-
-      continue;
-    }
-
-    if (terminatorFlag) {
-      terminatorFlag = false;
-    }
-
-    processedText.push(char);
-
-    if ((char === '!' || char === '?' || char === '.') && i < text.length - 1) {
-      terminatorFlag = true;
-    }
-  }
-
-  return processedText.join('');
-}
-
 function removeEmptyValues(words: string[]) {
   return words.filter((word) => word !== '');
 }
