@@ -12,25 +12,17 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { TextModule } from './text/text.module';
 import { PublicModule } from './public/public.module';
+import { typeOrmConfig } from './config/typeorm.config';
 
 @Module({
   imports: [
     WordsModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(typeOrmConfig),
     DictionaryApiModule,
     AuthModule,
     WordsStorageModule,
     TextModule,
-    PublicModule
+    PublicModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
