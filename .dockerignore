@@ -4,6 +4,7 @@ db
 doc
 test
 Dockerfile
+Dockerfile.production
 .git
 .env.example
 .dockerignore
