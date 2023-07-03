@@ -3,7 +3,7 @@ export enum WordStatus {
   LEARNED = 'learned',
 }
 
-export enum SordOrder {
+export enum SortOrder {
   ASC = 'asc',
   DESC = 'desc',
 }

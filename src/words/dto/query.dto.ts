@@ -5,7 +5,8 @@ import {
   IsPositive,
   IsString,
 } from 'class-validator';
-import { SordOrder, WordStatus } from 'src/const/enum';
+// TODO: fix typo
+import { SortOrder, WordStatus } from 'src/const/enum';
 
 export default class QueryDto {
   @IsEnum(WordStatus)
@@ -21,7 +22,7 @@ export default class QueryDto {
   include?: string;
 
   @IsOptional()
-  order?: SordOrder;
+  order?: SortOrder;
 
   @IsNumberString()
   @IsOptional()
