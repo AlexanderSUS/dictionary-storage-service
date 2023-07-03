@@ -19,8 +19,8 @@ export class TextController {
   @Post()
   @ApiCreatedResponse({
     description:
-      'Service breaks text in to words and match theese words with user strorage. \
-        For each new word service tries to find meaning. All founded new words will be stored in user strore',
+      'Service breaks text in to words and match these words with user storage. \
+        For each new word service tries to find meaning. All founded new words will be stored in user store',
     type: TextResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'User unauthorized' })

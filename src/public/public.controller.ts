@@ -29,7 +29,7 @@ export class WordsController {
   @ApiOkResponse({
     description:
       'Service breaks text in to words. For each word service \
-       tries to find meaning. Then rerurn list found and not found words',
+       tries to find meaning. Then return list found and not found words',
     type: ParsedTextDto,
   })
   createText(@Body() createTextDto: CreateTextDto) {

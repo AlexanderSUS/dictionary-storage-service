@@ -1,6 +1,6 @@
 import { ArrayOverlap, Not } from 'typeorm';
 
-const getPartOfSpeechCriterias = (exclude: string, include: string) => {
+const getPartOfSpeechCriteria = (exclude: string, include: string) => {
   const excludeStrings = exclude && exclude.split(',');
   const includeStrings = include && include.split(',');
 
@@ -15,4 +15,4 @@ const getPartOfSpeechCriterias = (exclude: string, include: string) => {
   return null;
 };
 
-export default getPartOfSpeechCriterias;
+export default getPartOfSpeechCriteria;

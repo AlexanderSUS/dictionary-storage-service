@@ -1,4 +1,4 @@
-import { Meaning } from 'src/types/dictionaryApiResponce';
+import { Meaning } from 'src/types/dictionaryApiResponse';
 import { MeaningDto } from 'src/words/dto/meaning.dto';
 
 function getMeanings(meanings: Meaning[]): MeaningDto[] {

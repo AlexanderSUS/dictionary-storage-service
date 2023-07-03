@@ -14,17 +14,17 @@ export class WordsStorageService {
     @InjectRepository(NotFoundWord)
     private notFoundWordsRepository: Repository<NotFoundWord>,
   ) {}
-  private updateWordOccourrence(word: Word) {
+  private updateWordOccurrence(word: Word) {
     return this.wordsRepository.save({
       ...word,
-      occourrence: word.occourrence + 1,
+      occurrence: word.occurrence + 1,
     });
   }
 
-  private updateNotFoundWordOccourrence(word: NotFoundWord) {
+  private updateNotFoundWordOccurrence(word: NotFoundWord) {
     return this.notFoundWordsRepository.save({
       ...word,
-      occourrence: word.occourrence + 1,
+      occurrence: word.occurrence + 1,
     });
   }
 
@@ -32,7 +32,7 @@ export class WordsStorageService {
     const wordFromDb = await this.wordsRepository.findOneBy({ word });
 
     if (wordFromDb) {
-      await this.updateWordOccourrence(wordFromDb);
+      await this.updateWordOccurrence(wordFromDb);
 
       return wordFromDb;
     }
@@ -42,7 +42,7 @@ export class WordsStorageService {
     });
 
     if (notFoundWordFromDb) {
-      await this.updateNotFoundWordOccourrence(notFoundWordFromDb);
+      await this.updateNotFoundWordOccurrence(notFoundWordFromDb);
 
       return null;
     }

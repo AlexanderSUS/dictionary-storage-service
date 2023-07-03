@@ -9,5 +9,5 @@ export default class NotFoundWord {
   word: string;
 
   @Column({ default: 0 })
-  occourrence: number;
+  occurrence: number;
 }

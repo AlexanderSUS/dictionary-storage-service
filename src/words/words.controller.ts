@@ -91,7 +91,7 @@ export class WordsController {
 
   @Delete(':id')
   @ApiNoContentResponse({
-    description: 'word was successfuly removed from user store',
+    description: 'word was successfully removed from user store',
   })
   @ApiNotFoundResponse({ description: 'Word not found in user store' })
   @HttpCode(HttpStatus.NO_CONTENT)

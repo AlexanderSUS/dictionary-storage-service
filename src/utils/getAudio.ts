@@ -1,4 +1,4 @@
-import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
+import { DictionaryApiData } from 'src/types/dictionaryApiResponse';
 
 const getAudio = (data: DictionaryApiData[]) => {
   let audio: null | string = null;

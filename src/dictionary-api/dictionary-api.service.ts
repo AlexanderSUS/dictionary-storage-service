@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
+import { DictionaryApiData } from 'src/types/dictionaryApiResponse';
 import { DICTIONARY_API_URL } from 'src/const/const';
 import parseDictionaryApiData from 'src/utils/parseDictionaryApiData';
 import { Word } from 'src/words/entities/word.entity';

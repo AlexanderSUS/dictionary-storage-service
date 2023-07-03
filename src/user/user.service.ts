@@ -4,7 +4,7 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import handleUserForResonse from 'src/utils/handleUserForResponse';
+import handleUserForResponse from 'src/utils/handleUserForResponse';
 import { UserWithoutPassword } from 'src/types/methodsReturnTypes';
 
 @Injectable()
@@ -28,13 +28,13 @@ export class UserService {
 
     const user = await this.userRepository.save(userDto);
 
-    return handleUserForResonse(user);
+    return handleUserForResponse(user);
   }
 
   async findAll(): Promise<UserWithoutPassword[]> {
     const users = await this.userRepository.find();
 
-    return users.map((user) => handleUserForResonse(user));
+    return users.map((user) => handleUserForResponse(user));
   }
 
   async findOne(id: string) {
@@ -44,7 +44,7 @@ export class UserService {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    return handleUserForResonse(user);
+    return handleUserForResponse(user);
   }
 
   async findOneByLogin(login: string) {
@@ -79,7 +79,7 @@ export class UserService {
       password: updatePasswordDto.newPassword,
     });
 
-    return handleUserForResonse(updatedUser);
+    return handleUserForResponse(updatedUser);
   }
 
   async remove(id: string) {

@@ -1,7 +1,7 @@
 import { UserWithoutPassword } from 'src/types/methodsReturnTypes';
 import { User } from 'src/user/entities/user.entity';
 
-const handleUserForResonse = (user: User): UserWithoutPassword => {
+const handleUserForResponse = (user: User): UserWithoutPassword => {
   user.createdAt = new Date(user.createdAt).getTime();
   user.updatedAt = new Date(user.updatedAt).getTime();
 
@@ -10,4 +10,4 @@ const handleUserForResonse = (user: User): UserWithoutPassword => {
   return user;
 };
 
-export default handleUserForResonse;
+export default handleUserForResponse;

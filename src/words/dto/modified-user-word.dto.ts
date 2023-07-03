@@ -9,5 +9,5 @@ export class ModifiedUserWordDto {
   audio: string | null;
   partOfSpeech: string[];
   meaning: MeaningDto[];
-  occourrence: number;
+  occurrence: number;
 }

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
-import getPartOfSpeechCriterias from 'src/utils/getPartOfSpeechCriteria';
+import getPartOfSpeechCriteria from 'src/utils/getPartOfSpeechCriteria';
 import modifyUserWord from 'src/utils/modifyUserWord';
 import { WordsStorageService } from 'src/words-storage/words-storage.service';
 import { Repository } from 'typeorm';
@@ -29,7 +29,7 @@ export class WordsService {
 
     if (userWord) {
       throw new HttpException(
-        'This word already in your srore',
+        'This word already in your store',
         HttpStatus.CONFLICT,
       );
     }
@@ -58,7 +58,7 @@ export class WordsService {
         },
         status,
         word: {
-          partOfSpeech: getPartOfSpeechCriterias(exclude, include),
+          partOfSpeech: getPartOfSpeechCriteria(exclude, include),
         },
       },
       order: {

@@ -23,7 +23,7 @@ export class Word {
   meaning: MeaningDto[];
 
   @Column({ default: 0 })
-  occourrence: number;
+  occurrence: number;
 
   @OneToMany(() => UserWord, (userWord) => userWord.word)
   userWords: UserWord[];

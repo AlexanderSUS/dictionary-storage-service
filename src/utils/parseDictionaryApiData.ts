@@ -1,6 +1,6 @@
-import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
+import { DictionaryApiData } from 'src/types/dictionaryApiResponse';
 import { Word } from 'src/words/entities/word.entity';
-import getAudio from './getAutio';
+import getAudio from './getAudio';
 import getMeanings from './getMeanings';
 import getPhonetic from './getPhonetic';
 

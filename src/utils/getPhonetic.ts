@@ -1,4 +1,4 @@
-import { DictionaryApiData } from 'src/types/dictionaryApiResponce';
+import { DictionaryApiData } from 'src/types/dictionaryApiResponse';
 
 const getPhonetic = (data: DictionaryApiData[]) => {
   let phonetic: null | string = null;
