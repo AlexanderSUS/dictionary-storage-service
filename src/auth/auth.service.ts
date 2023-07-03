@@ -6,12 +6,15 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshPayload } from './interface/refreshPayload';
 import { UserWithoutPassword } from 'src/types/methodsReturnTypes';
 import TokensDto from './dto/tokens.dto';
+import { ConfigService } from '@nestjs/config';
+import { EnvironmentVariables } from 'src/config/environment-variables.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService<EnvironmentVariables>,
   ) {}
 
   async validateUser(
@@ -33,13 +36,13 @@ export class AuthService {
 
   private getTokens(payload: { login: string; userId: string }): TokensDto {
     const access_token = this.jwtService.sign(payload, {
-      expiresIn: process.env.TOKEN_EXPIRE_TIME,
-      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: this.configService.get('TOKEN_EXPIRE_TIME'),
+      secret: this.configService.get('JWT_SECRET_KEY'),
     });
 
     const refresh_token = this.jwtService.sign(payload, {
-      expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
-      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: this.configService.get('TOKEN_REFRESH_EXPIRE_TIME'),
+      secret: this.configService.get('JWT_SECRET_KEY'),
     });
 
     return { access_token, refresh_token };
@@ -48,7 +51,7 @@ export class AuthService {
   async signUp(createUserDto: CreateUserDto): Promise<string> {
     const password = await bycrypt.hash(
       createUserDto.password,
-      parseInt(process.env.CRYPT_SALT),
+      parseInt(this.configService.get('CRYPT_SALT')),
     );
 
     await this.userService.create({ ...createUserDto, password });
@@ -64,7 +67,7 @@ export class AuthService {
 
     const refreshTokenHash = await bycrypt.hash(
       tokens.refresh_token,
-      parseInt(process.env.CRYPT_SALT),
+      parseInt(this.configService.get('CRYPT_SALT')),
     );
 
     await this.userService.updateRefreshToken(user.id, refreshTokenHash);
@@ -96,7 +99,7 @@ export class AuthService {
 
     const newRefreshTokenHash = await bycrypt.hash(
       tokens.refresh_token,
-      parseInt(process.env.CRYPT_SALT),
+      parseInt(this.configService.get('CRYPT_SALT')),
     );
 
     await this.userService.updateRefreshToken(id, newRefreshTokenHash);

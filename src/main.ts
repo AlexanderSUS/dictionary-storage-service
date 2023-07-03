@@ -1,13 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import 'dotenv';
-import 'reflect-metadata';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import 'reflect-metadata';
 
 async function bootstrap() {
-  const port = process.env.PORT || 4000;
-
   const app = await NestFactory.create(AppModule);
 
   const docsConfig = new DocumentBuilder()
@@ -20,8 +18,11 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT');
+
   await app.listen(port, () => {
-    console.log(`App runing on ${port} port`);
+    console.log(`App running on ${port} port`);
   });
 }
 bootstrap();
