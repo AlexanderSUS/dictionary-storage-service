@@ -1,5 +1,5 @@
 import { ConfigModuleOptions } from '@nestjs/config';
-import Joi from 'joi';
+import * as Joi from 'joi';
 
 export const configuration: ConfigModuleOptions = {
   isGlobal: true,
@@ -15,6 +15,5 @@ export const configuration: ConfigModuleOptions = {
     JWT_SECRET_REFRESH_KEY: Joi.string().required(),
     TOKEN_EXPIRE_TIME: Joi.string().required(),
     TOKEN_REFRESH_EXPIRE_TIME: Joi.string().required(),
-    DICTIONARY_API_URL: Joi.string().required(),
   }),
 };
