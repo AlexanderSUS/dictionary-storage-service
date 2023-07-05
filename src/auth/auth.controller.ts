@@ -31,7 +31,7 @@ export class AuthController {
 
   @Post('signup')
   @ApiCreatedResponse({
-    description: 'New user was succesfully created',
+    description: 'New user was successfully created',
     type: String,
   })
   @ApiConflictResponse({ description: 'User already exits' })
