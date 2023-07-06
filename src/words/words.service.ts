@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import getFindOneOptionsByUserId from 'src/utils/getFindOneWordOptionsByUserId';
 import getPartOfSpeechCriteria from 'src/utils/getPartOfSpeechCriteria';
@@ -28,16 +32,13 @@ export class WordsService {
     );
 
     if (userWord) {
-      throw new HttpException(
-        'This word already in your store',
-        HttpStatus.CONFLICT,
-      );
+      throw new ConflictException('This word already in your store');
     }
 
     const newWord = await this.wordsStorage.getWordFromDb(word);
 
     if (!newWord) {
-      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Word not found');
     }
 
     const data = await this.userWordRepository.save({
@@ -74,7 +75,7 @@ export class WordsService {
     });
 
     if (!words.length) {
-      throw new HttpException('Words not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Words not found');
     }
 
     return words.map((word) => modifyUserWord(word));
@@ -94,7 +95,7 @@ export class WordsService {
     });
 
     if (!word) {
-      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Word not found');
     }
 
     return modifyUserWord(word);
@@ -115,7 +116,7 @@ export class WordsService {
     });
 
     if (!word) {
-      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Word not found');
     }
 
     const updatedWord = await this.userWordRepository.save({
@@ -137,7 +138,7 @@ export class WordsService {
     });
 
     if (!word) {
-      throw new HttpException('Word not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Word not found');
     }
 
     await this.userWordRepository.remove(word);
