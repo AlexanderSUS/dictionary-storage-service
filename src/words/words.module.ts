@@ -4,10 +4,11 @@ import { WordsController } from './words.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WordsStorageModule } from 'src/words-storage/words-storage.module';
 import { UserWord } from './entities/userWord.entity';
+import { UserWordsRepository } from './words.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserWord]), WordsStorageModule],
   controllers: [WordsController],
-  providers: [WordsService],
+  providers: [WordsService, UserWordsRepository],
 })
 export class WordsModule {}

@@ -17,7 +17,6 @@ import { EnvironmentVariables } from 'src/config/environment-variables.interface
         password: configService.get('POSTGRES_PASSWORD'),
         entities: ['dist/**/entities/*.entity.js'],
         synchronize: false,
-        migrations: ['src/migrations/*.ts'],
       }),
     }),
   ],

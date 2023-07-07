@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ModifiedUserWordDto } from './dto/modified-user-word.dto';
 import { UserWord } from './entities/userWord.entity';
 import QueryDto from './dto/query.dto';
 import getPartOfSpeechCriteria from 'src/utils/getPartOfSpeechCriteria';
@@ -11,7 +10,7 @@ import { Word } from './entities/word.entity';
 @Injectable()
 export class UserWordsRepository {
   constructor(
-    @InjectRepository(ModifiedUserWordDto)
+    @InjectRepository(UserWord)
     private readonly userWordsRepository: Repository<UserWord>,
   ) {}
 
